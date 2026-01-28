@@ -1,0 +1,159 @@
+Checking dependencies...
+Γ£ô ultralytics already installed
+Γ£ô torch already installed
+Γ£ô torchvision already installed
+
+============================================================
+YOLOv8 Training Configuration
+============================================================
+Dataset YAML: C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\data.yaml
+Dataset exists: True
+
+============================================================
+Starting YOLOv8 Training...
+============================================================
+
+Ultralytics 8.4.7  Python-3.13.5 torch-2.10.0+cpu CPU (AMD Ryzen 7 PRO 6850U with Radeon Graphics)
+[34m[1mengine\trainer: [0magnostic_nms=False, amp=True, angle=1.0, augment=True, auto_augment=randaugment, batch=16, bgr=0.0, box=7.5, cache=False, cfg=None, classes=None, close_mosaic=10, cls=0.5, compile=False, conf=None, copy_paste=0.0, copy_paste_mode=flip, cos_lr=False, cutmix=0.0, data=C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\data.yaml, degrees=0.0, deterministic=True, device=cpu, dfl=1.5, dnn=False, dropout=0.0, dynamic=False, embed=None, epochs=200, erasing=0.4, exist_ok=False, fliplr=0.5, flipud=0.0, format=torchscript, fraction=1.0, freeze=None, half=False, hsv_h=0.015, hsv_s=0.7, hsv_v=0.4, imgsz=640, int8=False, iou=0.7, keras=False, kobj=1.0, line_width=None, lr0=0.01, lrf=0.01, mask_ratio=4, max_det=300, mixup=0.1, mode=train, model=yolov8m.pt, momentum=0.937, mosaic=1.0, multi_scale=0.0, name=waste_detector11, nbs=64, nms=False, opset=None, optimize=False, optimizer=auto, overlap_mask=True, patience=30, perspective=0.0, plots=True, pose=12.0, pretrained=True, profile=False, project=runs/detect, rect=False, resume=False, retina_masks=False, rle=1.0, save=True, save_conf=False, save_crop=False, save_dir=C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\runs\detect\runs\detect\waste_detector11, save_frames=False, save_json=True, save_period=-1, save_txt=False, scale=0.5, seed=0, shear=0.0, show=False, show_boxes=True, show_conf=True, show_labels=True, simplify=True, single_cls=False, source=None, split=val, stream_buffer=False, task=detect, time=None, tracker=botsort.yaml, translate=0.1, val=True, verbose=True, vid_stride=1, visualize=False, warmup_bias_lr=0.1, warmup_epochs=3.0, warmup_momentum=0.8, weight_decay=0.0005, workers=4, workspace=None
+Overriding model.yaml nc=80 with nc=3
+
+                   from  n    params  module                                       arguments                     
+  0                  -1  1      1392  ultralytics.nn.modules.conv.Conv             [3, 48, 3, 2]                 
+  1                  -1  1     41664  ultralytics.nn.modules.conv.Conv             [48, 96, 3, 2]                
+  2                  -1  2    111360  ultralytics.nn.modules.block.C2f             [96, 96, 2, True]             
+  3                  -1  1    166272  ultralytics.nn.modules.conv.Conv             [96, 192, 3, 2]               
+  4                  -1  4    813312  ultralytics.nn.modules.block.C2f             [192, 192, 4, True]           
+  5                  -1  1    664320  ultralytics.nn.modules.conv.Conv             [192, 384, 3, 2]              
+  6                  -1  4   3248640  ultralytics.nn.modules.block.C2f             [384, 384, 4, True]           
+  7                  -1  1   1991808  ultralytics.nn.modules.conv.Conv             [384, 576, 3, 2]              
+  8                  -1  2   3985920  ultralytics.nn.modules.block.C2f             [576, 576, 2, True]           
+  9                  -1  1    831168  ultralytics.nn.modules.block.SPPF            [576, 576, 5]                 
+ 10                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
+ 11             [-1, 6]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 12                  -1  2   1993728  ultralytics.nn.modules.block.C2f             [960, 384, 2]                 
+ 13                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
+ 14             [-1, 4]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 15                  -1  2    517632  ultralytics.nn.modules.block.C2f             [576, 192, 2]                 
+ 16                  -1  1    332160  ultralytics.nn.modules.conv.Conv             [192, 192, 3, 2]              
+ 17            [-1, 12]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 18                  -1  2   1846272  ultralytics.nn.modules.block.C2f             [576, 384, 2]                 
+ 19                  -1  1   1327872  ultralytics.nn.modules.conv.Conv             [384, 384, 3, 2]              
+ 20             [-1, 9]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 21                  -1  2   4207104  ultralytics.nn.modules.block.C2f             [960, 576, 2]                 
+ 22        [15, 18, 21]  1   3777433  ultralytics.nn.modules.head.Detect           [3, 16, None, [192, 384, 576]]
+Model summary: 170 layers, 25,858,057 parameters, 25,858,041 gradients, 79.1 GFLOPs
+
+Transferred 469/475 items from pretrained weights
+Freezing layer 'model.22.dfl.conv.weight'
+[34m[1mtrain: [0mFast image access  (ping: 1.10.1 ms, read: 2.11.6 MB/s, size: 39.4 KB)
+
+[K[34m[1mtrain: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\train\labels.cache... 1740 images, 60 backgrounds, 0 corrupt: 100% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü 1800/1800 209.7Mit/s 0.0s
+WARNING Box and segment counts should be equal, but got len(segments) = 306, len(boxes) = 2428. To resolve this only boxes will be used and all segments will be removed. To avoid this please supply either a detect or segment dataset, not a detect-segment mixed dataset.
+[34m[1mval: [0mFast image access  (ping: 0.80.3 ms, read: 3.31.1 MB/s, size: 46.4 KB)
+
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1 images, 0 backgrounds, 0 corrupt: 0% ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1/4478 3.0it/s 0.1s<25:00
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 49 images, 0 backgrounds, 0 corrupt: 1% ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 49/4478 133.9it/s 0.2s<33.1s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 97 images, 0 backgrounds, 0 corrupt: 2% ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 97/4478 223.5it/s 0.3s<19.6s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 153 images, 0 backgrounds, 0 corrupt: 3% ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 153/4478 302.7it/s 0.4s<14.3s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 209 images, 0 backgrounds, 0 corrupt: 5% Γò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 209/4478 358.7it/s 0.6s<11.9s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 257 images, 0 backgrounds, 0 corrupt: 6% Γò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 257/4478 394.0it/s 0.7s<10.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 307 images, 0 backgrounds, 0 corrupt: 7% Γò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 307/4478 425.6it/s 0.8s<9.8s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 353 images, 0 backgrounds, 0 corrupt: 8% Γò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 353/4478 427.9it/s 0.9s<9.6s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 400 images, 0 backgrounds, 0 corrupt: 9% ΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 400/4478 426.0it/s 1.0s<9.6s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 446 images, 0 backgrounds, 0 corrupt: 10% ΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 446/4478 419.5it/s 1.1s<9.6s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 493 images, 0 backgrounds, 0 corrupt: 11% ΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 493/4478 420.4it/s 1.2s<9.5s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 535 images, 0 backgrounds, 0 corrupt: 12% ΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 535/4478 419.9it/s 1.3s<9.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 583 images, 0 backgrounds, 0 corrupt: 13% ΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 583/4478 431.2it/s 1.4s<9.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 631 images, 0 backgrounds, 0 corrupt: 14% ΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 631/4478 437.3it/s 1.5s<8.8s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 687 images, 0 backgrounds, 0 corrupt: 15% ΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 687/4478 453.3it/s 1.6s<8.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 743 images, 0 backgrounds, 0 corrupt: 17% ΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 743/4478 465.1it/s 1.7s<8.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 799 images, 0 backgrounds, 0 corrupt: 18% ΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 799/4478 478.8it/s 1.8s<7.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 855 images, 0 backgrounds, 0 corrupt: 19% ΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 855/4478 488.9it/s 2.0s<7.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 903 images, 0 backgrounds, 0 corrupt: 20% ΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 903/4478 468.5it/s 2.1s<7.6s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 950 images, 0 backgrounds, 0 corrupt: 21% ΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 950/4478 467.3it/s 2.2s<7.5s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 967 images, 1 backgrounds, 0 corrupt: 22% ΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 968/4478 350.5it/s 2.4s<10.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 979 images, 4 backgrounds, 0 corrupt: 22% ΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 983/4478 280.4it/s 2.5s<12.5s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 982 images, 7 backgrounds, 0 corrupt: 22% ΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 989/4478 207.8it/s 2.7s<16.8s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1024 images, 12 backgrounds, 0 corrupt: 23% ΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1036/4478 205.8it/s 2.9s<16.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1033 images, 13 backgrounds, 0 corrupt: 23% ΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1046/4478 171.0it/s 3.0s<20.1s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1069 images, 19 backgrounds, 0 corrupt: 24% ΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1088/4478 214.7it/s 3.2s<15.8s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1087 images, 23 backgrounds, 0 corrupt: 25% ΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1110/4478 170.5it/s 3.5s<19.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1159 images, 29 backgrounds, 0 corrupt: 27% ΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1188/4478 349.3it/s 3.6s<9.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1201 images, 29 backgrounds, 0 corrupt: 27% ΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1230/4478 361.2it/s 3.7s<9.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1223 images, 29 backgrounds, 0 corrupt: 28% ΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1252/4478 307.5it/s 3.8s<10.5s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1272 images, 29 backgrounds, 0 corrupt: 29% ΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1301/4478 361.8it/s 3.9s<8.8s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1313 images, 29 backgrounds, 0 corrupt: 30% ΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1342/4478 374.2it/s 4.0s<8.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1355 images, 29 backgrounds, 0 corrupt: 31% ΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1384/4478 385.0it/s 4.1s<8.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1400 images, 29 backgrounds, 0 corrupt: 32% ΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1429/4478 396.9it/s 4.2s<7.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1448 images, 29 backgrounds, 0 corrupt: 33% ΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1477/4478 410.6it/s 4.3s<7.3s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1496 images, 29 backgrounds, 0 corrupt: 34% ΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1525/4478 423.9it/s 4.4s<7.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1544 images, 29 backgrounds, 0 corrupt: 35% ΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1573/4478 432.9it/s 4.5s<6.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1592 images, 29 backgrounds, 0 corrupt: 36% ΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1621/4478 438.5it/s 4.7s<6.5s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1640 images, 29 backgrounds, 0 corrupt: 37% ΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1669/4478 443.3it/s 4.8s<6.3s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1687 images, 29 backgrounds, 0 corrupt: 38% ΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1716/4478 439.9it/s 4.9s<6.3s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1735 images, 29 backgrounds, 0 corrupt: 39% ΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1764/4478 451.0it/s 5.0s<6.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1783 images, 29 backgrounds, 0 corrupt: 40% ΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1812/4478 451.2it/s 5.1s<5.9s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1831 images, 29 backgrounds, 0 corrupt: 42% ΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1860/4478 451.6it/s 5.2s<5.8s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1879 images, 29 backgrounds, 0 corrupt: 43% ΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1908/4478 450.1it/s 5.3s<5.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1920 images, 29 backgrounds, 0 corrupt: 44% ΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1949/4478 438.0it/s 5.4s<5.8s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 1957 images, 29 backgrounds, 0 corrupt: 44% ΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1986/4478 408.8it/s 5.5s<6.1s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2005 images, 29 backgrounds, 0 corrupt: 45% ΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 2034/4478 415.3it/s 5.6s<5.9s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2052 images, 29 backgrounds, 0 corrupt: 46% ΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 2081/4478 428.9it/s 5.7s<5.6s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2099 images, 29 backgrounds, 0 corrupt: 48% ΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 2128/4478 436.9it/s 5.8s<5.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2147 images, 29 backgrounds, 0 corrupt: 49% ΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 2176/4478 449.8it/s 5.9s<5.1s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2195 images, 29 backgrounds, 0 corrupt: 50% ΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 2224/4478 455.7it/s 6.0s<4.9s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2243 images, 29 backgrounds, 0 corrupt: 51% ΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 2272/4478 456.7it/s 6.1s<4.8s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2296 images, 29 backgrounds, 0 corrupt: 52% ΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 2325/4478 478.2it/s 6.2s<4.5s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2339 images, 29 backgrounds, 0 corrupt: 53% ΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 2368/4478 455.2it/s 6.3s<4.6s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2387 images, 29 backgrounds, 0 corrupt: 54% ΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 2416/4478 448.2it/s 6.4s<4.6s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2435 images, 29 backgrounds, 0 corrupt: 55% ΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇ 2464/4478 451.2it/s 6.5s<4.5s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2484 images, 29 backgrounds, 0 corrupt: 56% ΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇ 2513/4478 451.4it/s 6.7s<4.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2538 images, 29 backgrounds, 0 corrupt: 57% ΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇΓöÇ 2567/4478 477.6it/s 6.8s<4.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2588 images, 29 backgrounds, 0 corrupt: 58% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇ 2617/4478 464.2it/s 6.9s<4.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2644 images, 29 backgrounds, 0 corrupt: 60% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇ 2673/4478 473.3it/s 7.0s<3.8s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2692 images, 29 backgrounds, 0 corrupt: 61% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇ 2721/4478 470.6it/s 7.1s<3.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2748 images, 29 backgrounds, 0 corrupt: 62% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇ 2777/4478 475.7it/s 7.2s<3.6s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2804 images, 29 backgrounds, 0 corrupt: 63% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇ 2833/4478 478.9it/s 7.3s<3.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2852 images, 29 backgrounds, 0 corrupt: 64% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇ 2881/4478 476.3it/s 7.4s<3.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2909 images, 29 backgrounds, 0 corrupt: 66% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇΓöÇ 2938/4478 489.0it/s 7.5s<3.1s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 2958 images, 29 backgrounds, 0 corrupt: 67% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇ 2987/4478 487.9it/s 7.6s<3.1s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3013 images, 29 backgrounds, 0 corrupt: 68% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇ 3042/4478 485.2it/s 7.7s<3.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3069 images, 29 backgrounds, 0 corrupt: 69% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇ 3098/4478 489.7it/s 7.9s<2.8s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3125 images, 29 backgrounds, 0 corrupt: 70% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇ 3154/4478 495.9it/s 8.0s<2.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3181 images, 29 backgrounds, 0 corrupt: 72% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇ 3210/4478 499.7it/s 8.1s<2.5s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3237 images, 29 backgrounds, 0 corrupt: 73% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇ 3266/4478 500.4it/s 8.2s<2.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3288 images, 29 backgrounds, 0 corrupt: 74% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇΓöÇ 3317/4478 503.1it/s 8.3s<2.3s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3333 images, 29 backgrounds, 0 corrupt: 75% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇ 3362/4478 481.6it/s 8.4s<2.3s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3385 images, 29 backgrounds, 0 corrupt: 76% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇ 3414/4478 491.6it/s 8.5s<2.2s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3439 images, 29 backgrounds, 0 corrupt: 77% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇ 3468/4478 501.2it/s 8.6s<2.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3490 images, 29 backgrounds, 0 corrupt: 79% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇ 3519/4478 497.5it/s 8.7s<1.9s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3547 images, 29 backgrounds, 0 corrupt: 80% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇ 3576/4478 518.3it/s 8.8s<1.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3597 images, 29 backgrounds, 0 corrupt: 81% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇ 3626/4478 512.2it/s 8.9s<1.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3650 images, 29 backgrounds, 0 corrupt: 82% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇΓöÇ 3679/4478 514.4it/s 9.0s<1.6s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3703 images, 29 backgrounds, 0 corrupt: 83% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇ 3732/4478 517.2it/s 9.1s<1.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3765 images, 29 backgrounds, 0 corrupt: 85% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇ 3794/4478 530.5it/s 9.2s<1.3s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3821 images, 29 backgrounds, 0 corrupt: 86% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇ 3850/4478 535.4it/s 9.3s<1.2s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3878 images, 29 backgrounds, 0 corrupt: 87% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇ 3907/4478 537.9it/s 9.4s<1.1s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3933 images, 29 backgrounds, 0 corrupt: 88% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇ 3962/4478 535.7it/s 9.5s<1.0s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 3990 images, 29 backgrounds, 0 corrupt: 90% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇ 4019/4478 530.6it/s 9.6s<0.9s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 4046 images, 29 backgrounds, 0 corrupt: 91% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ΓöÇ 4075/4478 531.0it/s 9.7s<0.8s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 4095 images, 29 backgrounds, 0 corrupt: 92% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇ 4124/4478 517.2it/s 9.8s<0.7s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 4142 images, 29 backgrounds, 0 corrupt: 93% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇ 4171/4478 502.4it/s 9.9s<0.6s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 4198 images, 29 backgrounds, 0 corrupt: 94% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇ 4227/4478 503.9it/s 10.1s<0.5s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 4253 images, 29 backgrounds, 0 corrupt: 96% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇ 4282/4478 496.0it/s 10.2s<0.4s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 4302 images, 29 backgrounds, 0 corrupt: 97% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ 4331/4478 493.7it/s 10.3s<0.3s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 4349 images, 29 backgrounds, 0 corrupt: 98% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ 4378/4478 484.9it/s 10.4s<0.2s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 4397 images, 29 backgrounds, 0 corrupt: 99% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓò╕ 4426/4478 472.6it/s 10.5s<0.1s
+[K[34m[1mval: [0mScanning C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels... 4449 images, 29 backgrounds, 0 corrupt: 100% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü 4478/4478 423.8it/s 10.6s
+[34m[1mval: [0mNew cache created: C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\labels.cache
+WARNING Box and segment counts should be equal, but got len(segments) = 196, len(boxes) = 5664. To resolve this only boxes will be used and all segments will be removed. To avoid this please supply either a detect or segment dataset, not a detect-segment mixed dataset.
+Plotting labels to C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\runs\detect\runs\detect\waste_detector11\labels.jpg... 
+[34m[1moptimizer:[0m 'optimizer=auto' found, ignoring 'lr0=0.01' and 'momentum=0.937' and determining best 'optimizer', 'lr0' and 'momentum' automatically... 
+[34m[1moptimizer:[0m MuSGD(lr=0.001429, momentum=0.9) with parameter groups 77 weight(decay=0.0), 84 weight(decay=0.0005), 83 bias(decay=0.0)
+Image sizes 640 train, 640 val
+Using 0 dataloader workers
+Logging results to [1mC:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\runs\detect\runs\detect\waste_detector11[0m
+Starting training for 200 epochs...
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+

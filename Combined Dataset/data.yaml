@@ -1,0 +1,5 @@
+path: C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset
+train: C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\train\images
+val: C:\Users\logy1\OneDrive - Aston University\Final Year Project\Combined_Dataset\Combined Dataset\valid\images
+nc: 3
+names: ['metal', 'plastic', 'paper']
