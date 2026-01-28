@@ -1,0 +1,5 @@
+Combined Dataset/Combined_Dataset.zip
+Combined Dataset/Train + Valid.zip
+Combined Dataset/train/data.zip
+runs/detect/runs/detect/waste_detector7/weights/best.pt
+runs/detect/runs/detect/waste_detector7/weights/last.pt
