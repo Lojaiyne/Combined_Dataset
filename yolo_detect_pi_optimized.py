@@ -28,17 +28,24 @@ if not os.path.exists(args.model):
 # Load model with optimization for Pi
 print('Loading YOLO model...')
 try:
-    # Try loading as NCNN model if it's an NCNN format
-    if 'ncnn' in args.model.lower() or args.model.endswith('.param') or args.model.endswith('.bin'):
-        print('  Detected NCNN model format')
-        model = YOLO(args.model, task='detect')
+    # Load YOLO model (Ultralytics auto-detects format)
+    model_path = args.model
+    model = YOLO(model_path, task='detect')
+
+    # IMPORTANT: only move device for PyTorch (.pt) models
+    if str(model_path).lower().endswith(".pt"):
+        model.to(args.device)
+        print(f'  ✓ PyTorch model loaded')
     else:
-        model = YOLO(args.model, task='detect')
-    model.to(args.device)
+        print(f"  ✓ Exported model detected (NCNN/ONNX/etc) → running on CPU")
+
     labels = model.names
+    print(f'  ✓ Classes: {list(labels.values())}')
+
 except Exception as e:
     print(f'ERROR: Failed to load model: {e}')
     print('  Make sure the model path is correct and compatible with ultralytics')
+    print('  For NCNN: ensure both .param and .bin files are in the same directory')
     sys.exit(1)
 
 # Parse resolution
