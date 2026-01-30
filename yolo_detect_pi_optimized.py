@@ -27,9 +27,19 @@ if not os.path.exists(args.model):
 
 # Load model with optimization for Pi
 print('Loading YOLO model...')
-model = YOLO(args.model, task='detect')
-model.to(args.device)
-labels = model.names
+try:
+    # Try loading as NCNN model if it's an NCNN format
+    if 'ncnn' in args.model.lower() or args.model.endswith('.param') or args.model.endswith('.bin'):
+        print('  Detected NCNN model format')
+        model = YOLO(args.model, task='detect')
+    else:
+        model = YOLO(args.model, task='detect')
+    model.to(args.device)
+    labels = model.names
+except Exception as e:
+    print(f'ERROR: Failed to load model: {e}')
+    print('  Make sure the model path is correct and compatible with ultralytics')
+    sys.exit(1)
 
 # Parse resolution
 resW, resH = map(int, args.resolution.split('x'))
