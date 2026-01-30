@@ -15,8 +15,9 @@ from ultralytics import YOLO
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', help='Path to YOLO model file', required=True)
 parser.add_argument('--thresh', help='Confidence threshold (default: 0.5)', default=0.5, type=float)
-parser.add_argument('--resolution', help='Resolution WxH (default: 640x480)', default='640x480')
-parser.add_argument('--frame-skip', help='Process every Nth frame (default: 2)', default=2, type=int)
+parser.add_argument('--resolution', help='Resolution WxH (default: 416x416)', default='416x416')
+parser.add_argument('--frame-skip', help='Process every Nth frame (default: 3)', default=3, type=int)
+parser.add_argument('--imgsz', help='YOLO inference size (default: 320)', default=320, type=int)
 parser.add_argument('--device', help='Device (default: cpu, use "0" for GPU if available)', default='cpu')
 
 args = parser.parse_args()
@@ -72,7 +73,8 @@ frame_count = 0
 process_count = 0
 
 print(f'✓ Camera ready. Running inference...')
-print(f'  Resolution: {resW}x{resH}')
+print(f'  Camera resolution: {resW}x{resH}')
+print(f'  YOLO inference size: {args.imgsz}')
 print(f'  Frame skip: {args.frame_skip} (process every {args.frame_skip} frames)')
 print(f'  Device: {args.device}')
 print(f'Press "q" to quit, "s" to pause\n')
@@ -98,8 +100,8 @@ try:
         
         process_count += 1
         
-        # Run inference
-        results = model(frame, verbose=False, conf=args.thresh)
+        # Run inference with smaller image size for speed
+        results = model(frame, verbose=False, conf=args.thresh, imgsz=args.imgsz)
         detections = results[0].boxes
         
         object_count = 0
