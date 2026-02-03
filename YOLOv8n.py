@@ -23,12 +23,12 @@ parser.add_argument('--thresh', default=0.5,
                     help='Minimum confidence threshold (example: "0.4")')
 
 parser.add_argument('--resolution', default=None,
-                    help='Display/capture resolution WxH (example: "640x480"). If not set: use safe defaults.')
+                    help='Display/capture resolution WxH (example: "640x480"), if not set: use safe defaults.')
 
 parser.add_argument('--record', action='store_true',
                     help='Record results to demo1.avi (requires --resolution).')
 
-# SPEED OPTIONS
+# SPEED OPTIONS (parameters only)
 parser.add_argument('--imgsz', default=320, type=int,
                     help='YOLO inference image size (smaller = faster). Try 320 or 256.')
 
@@ -37,6 +37,22 @@ parser.add_argument('--stride', default=1, type=int,
 
 parser.add_argument('--draw', action='store_true',
                     help='Draw boxes/labels. If omitted, FPS is higher (still runs detection).')
+
+# NEW FPS knobs (parameters only)
+parser.add_argument('--max_det', default=50, type=int,
+                    help='Max detections per frame (lower = faster).')
+
+parser.add_argument('--half', action='store_true',
+                    help='Use FP16 inference if supported (can be faster on some hardware).')
+
+parser.add_argument('--classes', default=None,
+                    help='Comma-separated class ids to keep (e.g. "0,1,2"). Reduces work.')
+
+parser.add_argument('--noshow', action='store_true',
+                    help='Do not open OpenCV window (higher FPS).')
+
+parser.add_argument('--no_draw', action='store_true',
+                    help='Disable drawing even if --draw is set (higher FPS).')
 
 args = parser.parse_args()
 
@@ -47,7 +63,18 @@ user_res = args.resolution
 record = args.record
 imgsz = int(args.imgsz)
 stride = max(1, int(args.stride))
-DRAW = bool(args.draw)
+
+# Respect draw toggles
+DRAW = bool(args.draw) and (not args.no_draw)
+NOSHOW = bool(args.noshow)
+
+max_det = int(args.max_det)
+use_half = bool(args.half)
+
+# Parse classes (optional)
+classes = None
+if args.classes is not None:
+    classes = [int(x.strip()) for x in args.classes.split(',') if x.strip() != '']
 
 # ----------------------------
 # Validate model
@@ -104,17 +131,15 @@ else:
 
 # ----------------------------
 # Resolution handling
-# - If user doesn't set it, choose fast Pi-friendly defaults
 # ----------------------------
 resize = False
 if user_res:
     resize = True
     resW, resH = map(int, user_res.split('x'))
 else:
-    # SAFE DEFAULTS (fast)
     if source_type in ['usb', 'video', 'picamera']:
         resW, resH = 640, 480
-        resize = True  # keep pipeline consistent
+        resize = True
     else:
         resW, resH = None, None
 
@@ -151,13 +176,11 @@ elif source_type in ['video', 'usb']:
     cap_arg = img_source if source_type == 'video' else usb_idx
     cap = cv2.VideoCapture(cap_arg)
 
-    # reduce latency a bit (may not work on all backends)
     try:
         cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
     except Exception:
         pass
 
-    # Set camera/video resolution if available
     if resize:
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, resW)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, resH)
@@ -165,7 +188,6 @@ elif source_type in ['video', 'usb']:
 elif source_type == 'picamera':
     from picamera2 import Picamera2
     cap = Picamera2()
-    # Ensure resW/resH exist even if --resolution not passed
     cap.configure(cap.create_video_configuration(
         main={"format": "RGB888", "size": (resW, resH)}
     ))
@@ -218,7 +240,7 @@ while True:
             print('Unable to read frames from Picamera. Exiting program.')
             break
 
-    # Resize (fast, consistent)
+    # Resize
     if resize and (resW is not None) and (resH is not None):
         frame = cv2.resize(frame, (resW, resH), interpolation=cv2.INTER_LINEAR)
 
@@ -229,12 +251,19 @@ while True:
     object_count = 0
 
     if do_infer:
-        # Inference (imgsz is a big speed knob)
-        results = model.predict(frame, imgsz=imgsz, conf=min_thresh, verbose=False)
+        # Inference (use new params)
+        results = model.predict(
+            frame,
+            imgsz=imgsz,
+            conf=min_thresh,
+            classes=classes,
+            max_det=max_det,
+            half=use_half,
+            verbose=False
+        )
         detections = results[0].boxes
 
         if detections is not None and len(detections) > 0:
-            # Use numpy arrays directly (less python overhead)
             xyxy = detections.xyxy.cpu().numpy().astype(int)
             cls = detections.cls.cpu().numpy().astype(int)
             conf = detections.conf.cpu().numpy()
@@ -263,30 +292,30 @@ while True:
                     cv2.putText(frame, label, (xmin, label_ymin - 7),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
-    # Overlay text (optional but cheap)
-    if source_type in ['video', 'usb', 'picamera']:
+    # Overlay text
+    if source_type in ['video', 'usb', 'picamera'] and (not NOSHOW):
         cv2.putText(frame, f'FPS: {avg_frame_rate:0.2f}', (10, 20),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
 
-    cv2.putText(frame, f'Objects: {object_count}', (10, 45),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+    if not NOSHOW:
+        cv2.putText(frame, f'Objects: {object_count}', (10, 45),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
 
-    cv2.imshow('YOLO detection results', frame)
-    if record:
-        recorder.write(frame)
+        cv2.imshow('YOLO detection results', frame)
+        if record:
+            recorder.write(frame)
 
-    # Wait key
-    if source_type in ['image', 'folder']:
-        key = cv2.waitKey()
-    else:
-        key = cv2.waitKey(1)
+        if source_type in ['image', 'folder']:
+            key = cv2.waitKey()
+        else:
+            key = cv2.waitKey(1)
 
-    if key in (ord('q'), ord('Q')):
-        break
-    elif key in (ord('s'), ord('S')):
-        cv2.waitKey()
-    elif key in (ord('p'), ord('P')):
-        cv2.imwrite('capture.png', frame)
+        if key in (ord('q'), ord('Q')):
+            break
+        elif key in (ord('s'), ord('S')):
+            cv2.waitKey()
+        elif key in (ord('p'), ord('P')):
+            cv2.imwrite('capture.png', frame)
 
     # FPS calc
     t_stop = time.perf_counter()
