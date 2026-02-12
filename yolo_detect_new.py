@@ -265,12 +265,10 @@ while True:
                 continue
 
             # Fire ONLY when the object reaches the "trigger zone" near the solenoid
-            cx = (xmin + xmax) // 2                 # bbox center X
-            trigger_px = int(args.trigger_x * frame.shape[1])  # 30% of frame width (near left side)
-
-            if cx <= trigger_px and classname in solenoid_map:
-                print(f"FIRE! class={classname}, conf={conf:.2f}, cx={cx}, trigger={trigger_px}")
+            if classname in solenoid_map:
+                print(f"FIRE {classname}")
                 request_fire(solenoid_map[classname], now)
+
 
     # Calculate and draw framerate (if using video, USB, or Picamera source)
     if source_type == 'video' or source_type == 'usb' or source_type == 'picamera':
