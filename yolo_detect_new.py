@@ -56,6 +56,7 @@ if (not os.path.exists(model_path)):
 # Load the model into memory and get labemap
 model = YOLO(model_path, task='detect')
 labels = model.names
+print("MODEL LABELS:", labels)
 
 # -----------------------------
 # Solenoid setup
@@ -80,12 +81,13 @@ sol_off_at = [0.0] * len(solenoids)
 sol_last_fire = [0.0] * len(solenoids)
 
 def request_fire(sol_idx: int, now: float):
-    """Arm a solenoid pulse if cooldown allows."""
     if sol_idx < 0 or sol_idx >= len(solenoids):
+        print("Bad solenoid index:", sol_idx)
         return
-    # cooldown check
     if (now - sol_last_fire[sol_idx]) < cooldown_s:
+        print("Cooldown blocking solenoid", sol_idx)
         return
+    print("Solenoid ON idx", sol_idx)
     solenoids[sol_idx].on()
     sol_off_at[sol_idx] = now + pulse_s
     sol_last_fire[sol_idx] = now
@@ -267,6 +269,7 @@ while True:
             trigger_px = int(args.trigger_x * frame.shape[1])  # 30% of frame width (near left side)
 
             if cx <= trigger_px and classname in solenoid_map:
+                print(f"FIRE! class={classname}, conf={conf:.2f}, cx={cx}, trigger={trigger_px}")
                 request_fire(solenoid_map[classname], now)
 
     # Calculate and draw framerate (if using video, USB, or Picamera source)
