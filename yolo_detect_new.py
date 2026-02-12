@@ -7,6 +7,7 @@ import time
 import cv2
 import numpy as np
 from ultralytics import YOLO
+from gpiozero import OutputDevice
 
 # Define and parse user input arguments
 
@@ -23,10 +24,19 @@ parser.add_argument('--resolution', help='Resolution in WxH to display inference
                     default=None)
 parser.add_argument('--record', help='Record results from video or webcam and save it as "demo1.avi". Must specify --resolution argument to record.',
                     action='store_true')
-parser.add_argument('--frame-skip', help='Process every Nth frame for faster performance (default: 1, no skip). Use 2-3 for speed boost.',
-                    default=1, type=int)
-parser.add_argument('--imgsz', help='YOLO inference image size (default: 640). Use 416 or 320 for faster inference.',
-                    default=640, type=int)
+#solenoid control arguments
+parser.add_argument('--solenoid_pins', default="17,27,22",
+                    help='BCM GPIO pins for solenoids, comma-separated. Example: "17,27,22"')
+parser.add_argument('--solenoid_map', default="plastic:0,metal:1,paper:2",
+                    help='Map class->solenoid index. Example: "plastic:0,metal:1,paper:2"')
+parser.add_argument('--pulse_ms', default=120, type=int,
+                    help='How long to fire the solenoid (milliseconds).')
+parser.add_argument('--cooldown_ms', default=700, type=int,
+                    help='Minimum time between firings for the same solenoid (milliseconds).')
+parser.add_argument('--min_area', default=0, type=int,
+                    help='Ignore tiny detections by bbox area in pixels. 0 disables.')
+parser.add_argument('--trigger_x', type=float, default=0.7,
+                    help='Fire when bbox center is past this fraction of frame width (0..1).')
 
 args = parser.parse_args()
 
@@ -37,8 +47,6 @@ img_source = args.source
 min_thresh = float(args.thresh)
 user_res = args.resolution
 record = args.record
-frame_skip = args.frame_skip
-imgsz = args.imgsz
 
 # Check if model file exists and is valid
 if (not os.path.exists(model_path)):
@@ -48,6 +56,40 @@ if (not os.path.exists(model_path)):
 # Load the model into memory and get labemap
 model = YOLO(model_path, task='detect')
 labels = model.names
+
+# -----------------------------
+# Solenoid setup
+# -----------------------------
+solenoid_pins = [int(x.strip()) for x in args.solenoid_pins.split(',') if x.strip()]
+solenoids = [OutputDevice(pin, active_high=True, initial_value=False) for pin in solenoid_pins]
+
+# Parse "plastic:0,metal:1,paper:2" into dict
+solenoid_map = {}
+for pair in args.solenoid_map.split(','):
+    pair = pair.strip()
+    if not pair:
+        continue
+    cls, idx = pair.split(':')
+    solenoid_map[cls.strip()] = int(idx.strip())
+
+pulse_s = args.pulse_ms / 1000.0
+cooldown_s = args.cooldown_ms / 1000.0
+
+# For each solenoid: when it should turn OFF, and last time it fired
+sol_off_at = [0.0] * len(solenoids)
+sol_last_fire = [0.0] * len(solenoids)
+
+def request_fire(sol_idx: int, now: float):
+    """Arm a solenoid pulse if cooldown allows."""
+    if sol_idx < 0 or sol_idx >= len(solenoids):
+        return
+    # cooldown check
+    if (now - sol_last_fire[sol_idx]) < cooldown_s:
+        return
+    solenoids[sol_idx].on()
+    sol_off_at[sol_idx] = now + pulse_s
+    sol_last_fire[sol_idx] = now
+
 
 # Parse input to determine if image source is a file, folder, video, or USB camera
 img_ext_list = ['.jpg','.JPG','.jpeg','.JPEG','.png','.PNG','.bmp','.BMP']
@@ -82,7 +124,7 @@ if user_res:
 
 # Check if recording is valid and set up recording
 if record:
-    if source_type not in ['video','usb','picamera']:
+    if source_type not in ['video','usb']:
         print('Recording only works for video and camera sources. Please try again.')
         sys.exit(0)
     if not user_res:
@@ -130,19 +172,19 @@ avg_frame_rate = 0
 frame_rate_buffer = []
 fps_avg_len = 200
 img_count = 0
-frame_count = 0  # Track total frames for frame skipping
-last_detections = []  # Store last detections for skipped frames
-
-# Print performance settings
-if frame_skip > 1:
-    print(f'Frame skip enabled: Processing every {frame_skip} frames')
-if imgsz != 640:
-    print(f'YOLO inference size: {imgsz}x{imgsz}')
 
 # Begin inference loop
 while True:
 
-    t_start = time.perf_counter()
+    now = time.perf_counter()
+    t_start = now
+
+# Turn OFF any solenoids whose pulse time ended
+    for si in range(len(solenoids)):
+        if sol_off_at[si] != 0.0 and now >= sol_off_at[si]:
+            solenoids[si].off()
+            sol_off_at[si] = 0.0
+
 
     # Load frame from image source
     if source_type == 'image' or source_type == 'folder': # If source is image or image folder, load the image using its filename
@@ -175,22 +217,11 @@ while True:
     if resize == True:
         frame = cv2.resize(frame,(resW,resH))
 
-    frame_count += 1
+    # Run inference on frame
+    results = model(frame, verbose=False)
 
-    # Frame skipping logic for video/camera sources only
-    skip_inference = False
-    if source_type in ['video', 'usb', 'picamera'] and frame_skip > 1:
-        if frame_count % frame_skip != 0:
-            skip_inference = True
-
-    # Run inference on frame (with imgsz parameter for speed)
-    if not skip_inference:
-        results = model(frame, verbose=False, imgsz=imgsz)
-        detections = results[0].boxes
-        last_detections = detections  # Store for skipped frames
-    else:
-        # Use last detections for skipped frames
-        detections = last_detections
+    # Extract results
+    detections = results[0].boxes
 
     # Initialize variable for basic object counting example
     object_count = 0
@@ -225,6 +256,18 @@ while True:
 
             # Basic example: count the number of objects in the image
             object_count = object_count + 1
+
+            # Optional: ignore tiny boxes (helps prevent false triggers)
+            bbox_area = (xmax - xmin) * (ymax - ymin)
+            if args.min_area and bbox_area < args.min_area:
+                continue
+
+            # Fire ONLY when the object reaches the "trigger zone" near the solenoid
+            cx = (xmin + xmax) // 2                 # bbox center X
+            trigger_px = int(args.trigger_x * frame.shape[1])  # 30% of frame width (near left side)
+
+            if cx <= trigger_px and classname in solenoid_map:
+                request_fire(solenoid_map[classname], now)
 
     # Calculate and draw framerate (if using video, USB, or Picamera source)
     if source_type == 'video' or source_type == 'usb' or source_type == 'picamera':
@@ -270,4 +313,13 @@ if source_type == 'video' or source_type == 'usb':
 elif source_type == 'picamera':
     cap.stop()
 if record: recorder.release()
+
+# Ensure solenoids are OFF on exit
+for s in solenoids:
+    try:
+        s.off()
+        s.close()
+    except Exception:
+        pass
+
 cv2.destroyAllWindows()
