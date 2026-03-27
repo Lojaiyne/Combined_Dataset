@@ -45,6 +45,8 @@ parser.add_argument('--min_area', default=0, type=int,
                     help='Ignore tiny detections by bbox area in pixels. 0 disables.')
 parser.add_argument('--trigger_x', type=float, default=0.7,
                     help='Fire when bbox center is past this fraction of frame width (0..1).')
+parser.add_argument('--restart_delay_ms', type=int, default=150,
+                    help='Extra delay after solenoid pulse before restarting belt.')
 
 # motor driver arguments
 parser.add_argument('--motor_enable', action='store_true',
@@ -94,6 +96,7 @@ for pair in args.solenoid_map.split(','):
 
 pulse_s = args.pulse_ms / 1000.0
 cooldown_s = args.cooldown_ms / 1000.0
+restart_delay_s = args.restart_delay_ms / 1000.0
 
 # For each solenoid: when it should turn OFF, and last time it fired
 sol_off_at = [0.0] * len(solenoids)
@@ -102,14 +105,17 @@ sol_last_fire = [0.0] * len(solenoids)
 def request_fire(sol_idx: int, now: float):
     if sol_idx < 0 or sol_idx >= len(solenoids):
         print("Bad solenoid index:", sol_idx)
-        return
+        return False
+
     if (now - sol_last_fire[sol_idx]) < cooldown_s:
         print("Cooldown blocking solenoid", sol_idx)
-        return
+        return False
+
     print("Solenoid ON idx", sol_idx)
     solenoids[sol_idx].on()
     sol_off_at[sol_idx] = now + pulse_s
     sol_last_fire[sol_idx] = now
+    return True
 
 # -----------------------------
 # Motor setup (TB6612FNG I2C)
@@ -118,7 +124,11 @@ motor_driver = None
 motor_channel = None
 motor_speed = max(0, min(255, args.motor_speed))
 belt_stopped = False
-sort_done = False   # stops repeated triggering for same item
+
+# Sorting state
+sort_in_progress = False
+restart_belt_at = 0.0
+trigger_lock = False
 
 def motor_run():
     global belt_stopped
@@ -181,7 +191,7 @@ if user_res:
 
 # Check if recording is valid and set up recording
 if record:
-    if source_type not in ['video','usb']:
+    if source_type not in ['video','usb', 'picamera']:
         print('Recording only works for video and camera sources. Please try again.')
         sys.exit(0)
     if not user_res:
@@ -245,6 +255,12 @@ try:
             if sol_off_at[si] != 0.0 and now >= sol_off_at[si]:
                 solenoids[si].off()
                 sol_off_at[si] = 0.0
+                print("Solenoid OFF idx", si)
+
+        # Auto restart belt after pulse + delay
+        if args.motor_enable and sort_in_progress and belt_stopped and now >= restart_belt_at:
+            motor_run()
+            sort_in_progress = False
 
         # Load frame from image source
         if source_type == 'image' or source_type == 'folder':
@@ -289,10 +305,7 @@ try:
         results = model(frame, verbose=False)
         detections = results[0].boxes
         object_count = 0
-
-        # Reset trigger lock if no objects are detected anymore
-        if len(detections) == 0:
-            sort_done = False
+        any_object_past_line = False
 
         # Go through each detection
         for i in range(len(detections)):
@@ -324,18 +337,26 @@ try:
 
                 cx = int((xmin + xmax) / 2)
 
-                # Stop belt when object crosses trigger line
-                if (classname in solenoid_map) and (cx >= trigger_line_x) and (not sort_done):
+                if cx >= trigger_line_x:
+                    any_object_past_line = True
+
+                # Trigger only once while object is past the line
+                if (classname in solenoid_map) and (cx >= trigger_line_x) and (not trigger_lock) and (not sort_in_progress):
                     print(f"TRIGGERED: {classname} crossed line at x={cx}")
 
                     if args.motor_enable and not belt_stopped:
                         motor_stop()
 
-                    # Fire the correct solenoid after stopping
-                    request_fire(solenoid_map[classname], now)
+                    fired = request_fire(solenoid_map[classname], now)
 
-                    # Prevent repeated triggering for the same item
-                    sort_done = True
+                    if fired:
+                        sort_in_progress = True
+                        trigger_lock = True
+                        restart_belt_at = now + pulse_s + restart_delay_s
+
+        # Unlock only after no object is still past the trigger line
+        if not any_object_past_line:
+            trigger_lock = False
 
         # Calculate and draw framerate
         if source_type in ['video', 'usb', 'picamera']:
@@ -369,7 +390,9 @@ try:
             # press R to restart belt manually
             if args.motor_enable:
                 motor_run()
-                sort_done = False
+                sort_in_progress = False
+                trigger_lock = False
+                restart_belt_at = 0.0
 
         # Calculate FPS
         t_stop = time.perf_counter()
